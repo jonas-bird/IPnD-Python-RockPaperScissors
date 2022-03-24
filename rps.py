@@ -40,6 +40,27 @@ class HumanPlayer(Player):
         return self.choice
 
 
+class ReflectPlayer(Player):
+    """Computer player that repeats the oponents previous move,
+       should lead with random to keep mirror matches from always tying"""
+    def __init__(self):
+        self.next_move = random.choice(moves)
+
+    def move(self):
+        return self.next_move
+
+    def learn(self, my_move, their_move):
+        self.next_move = their_move
+
+
+class CyclePlayer(ReflectPlayer):
+    """Computer player that cycles through moves after an initial
+       random move"""
+
+    def learn(self, my_move, their_move):
+        self.next_move = moves[(moves.index(my_move) + 1) % 3]
+
+
 def beats(one, two):
     return ((one == 'rock' and two == 'scissors') or
             (one == 'scissors' and two == 'paper') or
@@ -60,8 +81,6 @@ class Game:
         move1 = self.p1.move()
         move2 = self.p2.move()
         print(f"Player 1: {move1}  Player 2: {move2}")
-        self.p1.learn(move1, move2)
-        self.p2.learn(move2, move1)
         if move1 == move2:
             self.score["ties"] += 1
         elif beats(move1, move2):
@@ -70,11 +89,13 @@ class Game:
             self.score["p2"] += 1
         else:
             print("Invalid round!")
+        self.p1.learn(move1, move2)
+        self.p2.learn(move2, move1)
 
     def play_game(self):
         print("Game start!")
-        for round in range(3):
-            print(f"Round {round}:")
+        for game_round in range(3):
+            print(f"Round {game_round}:")
             self.play_round()
         print("Game over!")
         print(f"Player 1 won {self.score['p1']} times")
@@ -83,5 +104,5 @@ class Game:
 
 
 if __name__ == '__main__':
-    game = Game(HumanPlayer(), RandomPlayer())
+    game = Game(RandomPlayer(), CyclePlayer())
     game.play_game()

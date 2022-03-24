@@ -28,6 +28,18 @@ class RandomPlayer(Player):
         return my_move
 
 
+class HumanPlayer(Player):
+    """Class to represent human players"""
+    def __init__(self):
+        self.choice = ""
+
+    def move(self):
+        self.choice = ""
+        while self.choice not in moves:
+            self.choice = input("Rock, paper, scissors? > ".lower())
+        return self.choice
+
+
 def beats(one, two):
     return ((one == 'rock' and two == 'scissors') or
             (one == 'scissors' and two == 'paper') or
@@ -51,18 +63,18 @@ class Game:
         self.p1.learn(move1, move2)
         self.p2.learn(move2, move1)
         if move1 == move2:
-            self.score["ties"] = self.score.get("ties", 0) + 1
+            self.score["ties"] += 1
         elif beats(move1, move2):
-            self.score["p1"] = self.score.get("p1", 0) + 1
+            self.score["p1"] += 1
         elif beats(move2, move1):
-            self.score["p2"] = self.score.get("p2", 0) + 1
+            self.score["p2"] += 1
         else:
             print("Invalid round!")
 
     def play_game(self):
         print("Game start!")
         for round in range(3):
-            print(f"Round {round + 1}:")
+            print(f"Round {round}:")
             self.play_round()
         print("Game over!")
         print(f"Player 1 won {self.score['p1']} times")
@@ -71,5 +83,5 @@ class Game:
 
 
 if __name__ == '__main__':
-    game = Game(RandomPlayer(), RandomPlayer())
+    game = Game(HumanPlayer(), RandomPlayer())
     game.play_game()

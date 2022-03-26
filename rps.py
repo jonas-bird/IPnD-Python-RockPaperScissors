@@ -6,7 +6,6 @@ and reports both Player's scores each round."""
 
 import random
 
-
 moves = ['rock', 'paper', 'scissors']
 
 """The Player class is the parent class for all of the Players
@@ -32,10 +31,11 @@ class HumanPlayer(Player):
     """Class to represent human players"""
     def __init__(self):
         self.choice = ""
+        self.choices = ['rock', 'paper', 'scissors', 'quit']
 
     def move(self):
         self.choice = ""
-        while self.choice not in moves:
+        while self.choice not in self.choices:
             self.choice = input("Rock, paper, scissors? > ".lower())
         return self.choice
 
@@ -76,12 +76,14 @@ class Game:
             "p2": 0,
             "ties": 0
         }
+        self.game_round = 0
 
     def play_round(self):
         move1 = self.p1.move()
         move2 = self.p2.move()
-        print(f"Player 1: {move1}  Player 2: {move2}")
-        if move1 == move2:
+        if move1 == 'quit':
+            self.end_game()
+        elif move1 == move2:
             self.score["ties"] += 1
         elif beats(move1, move2):
             self.score["p1"] += 1
@@ -89,20 +91,36 @@ class Game:
             self.score["p2"] += 1
         else:
             print("Invalid round!")
+
+        print(f"Player 1: {move1}  Player 2: {move2}")
         self.p1.learn(move1, move2)
         self.p2.learn(move2, move1)
 
     def play_game(self):
-        print("Game start!")
-        for game_round in range(3):
-            print(f"Round {game_round}:")
+        print("Rock Paper Scissors, start!")
+        # for game_round in range(3):
+        while True:
+            self.game_round += 1
+            print(f"Round {self.game_round}:")
             self.play_round()
+
+    def end_game(self):
         print("Game over!")
         print(f"Player 1 won {self.score['p1']} times")
         print(f"Player 2 won {self.score['p2']} times")
         print(f"And {self.score['ties']} ties")
+        if self.score['p1'] == self.score['p2']:
+            print('**The game is a tie!**')
+        elif self.score['p1'] > self.score['p2']:
+            print('**You WIN!**')
+        else:
+            print('**The computer won, this time...**')
+        quit()
 
 
 if __name__ == '__main__':
-    game = Game(RandomPlayer(), CyclePlayer())
+    computer_player = random.choice([CyclePlayer(), RandomPlayer(),
+                                     ReflectPlayer()])
+    # should I have it randomize per round perhaps?
+    game = Game(HumanPlayer(), computer_player)
     game.play_game()

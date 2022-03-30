@@ -93,11 +93,13 @@ class Game:
             print("Invalid round!")
 
         print(f"Player 1: {move1}  Player 2: {move2}")
+        print(f"Score: Player 1: {self.score['p1']}   ****   "
+              f"Player 2: {self.score['p2']}")
         self.p1.learn(move1, move2)
         self.p2.learn(move2, move1)
 
     def play_game(self):
-        print("Rock Paper Scissors, start!")
+        print("Rock Paper Scissors, start!\n(Type 'quit' to end)")
         # for game_round in range(3):
         while True:
             self.game_round += 1

@@ -36,7 +36,7 @@ class HumanPlayer(Player):
     def move(self):
         self.choice = ""
         while self.choice not in self.choices:
-            self.choice = input("Rock, paper, scissors? > ".lower())
+            self.choice = input("rock, paper, scissors? > ").lower()
         return self.choice
 
 
